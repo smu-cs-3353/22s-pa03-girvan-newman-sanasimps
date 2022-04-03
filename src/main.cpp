@@ -8,6 +8,8 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <typeinfo>
+#include <cxxabi.h>
 
 
 int main(int argc, char** argv) {
@@ -26,6 +28,7 @@ int main(int argc, char** argv) {
     typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;
 
     // Make convenient labels for the vertices
+    // defaults A=0, B=1, etc. so A-E are vertices and N is the number of vertices
     enum { A, B, C, D, E, N };
     const int num_vertices = N;
     const char* name = "ABCDE";
@@ -42,7 +45,15 @@ int main(int argc, char** argv) {
 
     // add the edges to the graph object
     for (int i = 0; i < num_edges; ++i)
-        add_edge(edge_array[i].first, edge_array[i].second, g);
+        boost::add_edge(edge_array[i].first, edge_array[i].second, g);
+
+    auto vpair = boost::vertices(g);
+    for(auto iter = vpair.first; iter != vpair.second; iter++)
+        std::cout << "vertex " << *iter << std::endl;
+
+    auto epair = boost::edges(g);
+    for(auto iter = epair.first; iter != epair.second; iter++)
+        std::cout << "edge " << *iter << std::endl;
 
     return 0;
 }
