@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS_RELEASE -O3)
 
 add_executable(pa03 src/main.cpp)
+configure_file(data/test_data_2.graphml data/test_data_2.graphml COPYONLY)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
