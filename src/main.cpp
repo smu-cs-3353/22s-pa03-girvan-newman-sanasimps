@@ -1,14 +1,10 @@
 //
 // Created by Zachary on 3/25/2022.
 //
-
-#include <iostream>
-#include <utility>
-#include <algorithm>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/dijkstra_shortest_paths.hpp>
-
+//TODO: make bundled vertix and edge structures
+//TODO: make undirected graph with bundles and add edges and vertices
+//TODO: Find away to move through graph and perform Breadth First Search, shortest path algo
+#include "Graph_helper.h"
 
 int main(int argc, char** argv) {
 //    cout << "Hello CS3353, your arguments were: ";
@@ -21,28 +17,34 @@ int main(int argc, char** argv) {
 //
 //    return 0;
 
+    Graph_helper g;
+    g.read_graphml("data/dataset.graphml");
+    g.print_graph();
+    g.print_vertices();
 
     // create a typedef for the Graph type
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;
+//    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
+//
+//    // Make convenient labels for the vertices
+//    // defaults A=0, B=1, etc. so A-F are vertices and N is the number of vertices
+//    enum { A, B, C, D, E, F, N };
+//    const int num_vertices = N;
+//    const char* name = "ABCDEF";
+//
+//    // writing out the edges in the graph
+//    typedef std::pair<int, int> Edge;
+//    Edge edge_array[] =
+//            { Edge(A,B), Edge(A,C), Edge(B,C), Edge(D,C),
+//              Edge(D,E), Edge(F,D), Edge(F,E) };
+//    const int num_edges = sizeof(edge_array)/sizeof(edge_array[0]);
+//
+//    // declare a graph object
+//    Graph g(num_vertices);
+//
+//    // add the edges to the graph object
+//    for (int i = 0; i < num_edges; ++i)
+//        boost::add_edge(edge_array[i].first, edge_array[i].second, g);
 
-    // Make convenient labels for the vertices
-    enum { A, B, C, D, E, N };
-    const int num_vertices = N;
-    const char* name = "ABCDE";
-
-    // writing out the edges in the graph
-    typedef std::pair<int, int> Edge;
-    Edge edge_array[] =
-            { Edge(A,B), Edge(A,D), Edge(C,A), Edge(D,C),
-              Edge(C,E), Edge(B,D), Edge(D,E) };
-    const int num_edges = sizeof(edge_array)/sizeof(edge_array[0]);
-
-    // declare a graph object
-    Graph g(num_vertices);
-
-    // add the edges to the graph object
-    for (int i = 0; i < num_edges; ++i)
-        add_edge(edge_array[i].first, edge_array[i].second, g);
 
     return 0;
 }
