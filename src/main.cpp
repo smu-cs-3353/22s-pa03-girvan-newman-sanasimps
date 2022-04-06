@@ -18,8 +18,9 @@ int main(int argc, char** argv) {
 //    return 0;
 
     Graph_helper g;
-    g.read_graphml("data/test_data_2.graphml");
+    g.read_graphml("data/dataset.graphml");
     g.print_graph();
+    g.print_vertices();
 
     // create a typedef for the Graph type
 //    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;

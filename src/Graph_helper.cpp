@@ -6,7 +6,7 @@
 
 
 void Graph_helper::print_graph() {
-    boost::print_graph(graph, get(&VertexProperty::name, graph));
+    boost::print_graph(graph);
 }
 
 void Graph_helper::print_edges() {
@@ -31,7 +31,6 @@ void Graph_helper::read_graphml(const char* file) {
 
     try {
         boost::dynamic_properties dp(boost::ignore_other_properties);
-        dp.property("name", boost::get(&VertexProperty::name, graph));
         dp.property("community", boost::get(&VertexProperty::community, graph));
         boost::read_graphml(is, graph, dp);
     }catch(std::exception& e) {

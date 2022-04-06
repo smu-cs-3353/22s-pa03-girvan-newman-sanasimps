@@ -5,6 +5,7 @@ set(CMAKE_CXX_FLAGS_RELEASE -O3)
 
 add_executable(pa03 src/main.cpp src/Graph_helper.cpp)
 configure_file(data/test_data_2.graphml data/test_data_2.graphml COPYONLY)
+configure_file(data/dataset.graphml data/dataset.graphml COPYONLY)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)

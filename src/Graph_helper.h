@@ -20,7 +20,6 @@
 
 struct GraphData { int community; };
 struct VertexProperty {
-    std::string name;
     int community;
 };
 struct EdgeProperty { std::string Name; };
