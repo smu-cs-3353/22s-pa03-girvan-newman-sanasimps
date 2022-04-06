@@ -2,10 +2,18 @@
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
-     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="node" attr.name="name" attr.type="string"/>
+  <key id="d1" for="node" attr.name="community" attr.type="int"/>
   <graph id="G" edgedefault="undirected">
-    <node id="n0"/>
-    <node id="n1"/>
+    <node id="n0">
+      <data key="d0">A</data>
+      <data key="d1">1</data>
+    </node>
+    <node id="n1">
+      <data key="d0">B</data>
+      <data key="d1">1</data>
+    </node>
     <edge source="n0" target="n1"/> 
   </graph>
 </graphml>
