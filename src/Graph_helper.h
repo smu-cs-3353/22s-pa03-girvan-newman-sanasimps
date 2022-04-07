@@ -17,12 +17,13 @@
 #include <typeinfo>
 #include <cxxabi.h>
 #include <fstream>
+#include <queue>
 
 struct GraphData { int community; };
 struct VertexProperty {
     int community;
 };
-struct EdgeProperty { std::string Name; };
+struct EdgeProperty { std::string Name = "m"; };
 
 using Graph = boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, VertexProperty, EdgeProperty>;
 
@@ -36,6 +37,7 @@ public:
     void print_vertices();
 
     void read_graphml(const char*);
+    void Breadth_first_search();
 
 
 };

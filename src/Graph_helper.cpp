@@ -11,8 +11,11 @@ void Graph_helper::print_graph() {
 
 void Graph_helper::print_edges() {
     auto epair = boost::edges(graph);
-    for(auto iter = epair.first; iter != epair.second; iter++)
-        std::cout << "edge " << *iter << std::endl;
+    for(auto iter = epair.first; iter != epair.second; iter++) {
+        graph[*iter].Name = "taco";
+        std::cout << "edge " << graph[*iter].Name << std::endl;
+
+    }
 }
 
 void Graph_helper::print_vertices() {
@@ -37,4 +40,29 @@ void Graph_helper::read_graphml(const char* file) {
         std::cout << e.what() << std::endl;
         return;
     }
+
+}
+
+void Graph_helper::Breadth_first_search () {
+
+    // While Girvan-Neumann modularity is not satisfied
+    auto vpair = boost::vertices(graph);
+    for(auto iter = vpair.first; iter != vpair.second; iter++) {
+        auto out_edges = boost::out_edges(*iter, graph);
+        std::cout << *iter << " <--> ";
+        for(auto it = out_edges.first; it != out_edges.second; it++)
+            std::cout << boost::target(*it, graph) << " ";
+        std::cout << std::endl;
+
+
+    }
+        // loop through each node
+            // get arr of prev.
+            // reconstruct path and add 1 to each edge
+
+        // remove edge with highest value
+
+    // find communities
+
+
 }
