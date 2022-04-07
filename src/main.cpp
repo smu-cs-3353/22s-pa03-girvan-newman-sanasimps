@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
 
     Graph_helper g;
-    g.read_graphml("data/dataset.graphml");
+    g.read_graphml("data/test_data_1.graphml");
     //g.print_graph();
     g.Breadth_first_search();
 

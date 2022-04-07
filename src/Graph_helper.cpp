@@ -44,17 +44,67 @@ void Graph_helper::read_graphml(const char* file) {
 }
 
 void Graph_helper::Breadth_first_search () {
+    typedef boost::graph_traits<Graph>::vertex_descriptor vd;
 
     // While Girvan-Neumann modularity is not satisfied
     auto vpair = boost::vertices(graph);
     for(auto iter = vpair.first; iter != vpair.second; iter++) {
-        auto out_edges = boost::out_edges(*iter, graph);
-        std::cout << *iter << " <--> ";
-        for(auto it = out_edges.first; it != out_edges.second; it++)
-            std::cout << boost::target(*it, graph) << " ";
+
+        std::cout << "source: " << *iter << std::endl;
+        std::cout << "visited: ";
+
+        std::queue<vd> q;
+        std::map<vd, vd> prev;
+        int count = -1;
+
+        q.push(*iter);
+        graph[*iter].used = true;
+        // source not included, when reconstructing use prev.count(source) != 0 as condition
+        while(!q.empty()) {
+            vd temp = q.front();
+            q.pop();
+            count++;
+            auto neighbors = boost::adjacent_vertices(temp, graph);
+            for(auto it = neighbors.first; it != neighbors.second; it++) {
+                if(!graph[*it].used && !graph[*it].foundPaths) {
+                    graph[*it].used = true;
+                    q.push(*it);
+                    graph[*it].distance = graph[temp].distance + 1;
+                    prev.insert(std::pair<vd, vd>(*it, temp));
+                    std::cout << *it << "(" << temp << ", " << graph[*it].distance << ") ";
+                }
+            }
+        }
+
+        std::cout << std::endl;
+        // reconstruct paths
+        for(auto& c : prev) {
+            std::vector<vd> path;
+            std::cout << c.first << ", " << c.second << ": ";
+            if(!graph[c.first].used) {
+                std::cout << "no path" << std::endl;
+            } else {
+                for(auto v = c.first; prev.count(v) != 0; v = prev[v]) {
+                    path.push_back(v);
+                }
+                path.push_back(*iter);
+                std::reverse(path.begin(), path.end());
+                std::cout << "Path: ";
+                for (auto v : path)
+                    std::cout << v << " ";
+                std::cout << std::endl;
+            }
+        }
+
+
         std::cout << std::endl;
 
+        graph[*iter].foundPaths = true;
+        auto t = boost::vertices(graph);
+        for(auto te = t.first; te != t.second; te++)
+           graph[*te].used = false;
 
+        std::cout << "source: " << *iter << std::endl;
     }
         // loop through each node
             // get arr of prev.

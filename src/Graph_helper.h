@@ -21,9 +21,15 @@
 
 struct GraphData { int community; };
 struct VertexProperty {
-    int community;
+    int community = 0;
+    bool foundPaths = false;
+    bool used = false;
+    int distance = -1;
 };
-struct EdgeProperty { std::string Name = "m"; };
+struct EdgeProperty {
+    std::string Name = "m";
+    int count = 0;
+};
 
 using Graph = boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, VertexProperty, EdgeProperty>;
 
