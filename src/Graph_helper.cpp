@@ -47,6 +47,8 @@ void Graph_helper::Breadth_first_search () {
     typedef boost::graph_traits<Graph>::vertex_descriptor vd;
 
     // While Girvan-Neumann modularity is not satisfied
+
+    //Breadth First Search to find shortest paths
     auto vpair = boost::vertices(graph);
     for(auto iter = vpair.first; iter != vpair.second; iter++) {
 
@@ -90,26 +92,41 @@ void Graph_helper::Breadth_first_search () {
                 path.push_back(*iter);
                 std::reverse(path.begin(), path.end());
                 std::cout << "Path: ";
-                for (auto v : path)
-                    std::cout << v << " ";
+                int v = 0;
+                std::cout << path[v] << " ";
+                for(v = 1; v < path.size(); v++) {
+                    std::cout << path[v] << " ";
+                    auto e = boost::edge(path[v-1], path[v], graph);
+                    graph[e.first].count++;
+                }
+
                 std::cout << std::endl;
             }
         }
 
-
         std::cout << std::endl;
-
+        // Resets tracking data for path construction
         graph[*iter].foundPaths = true;
         auto t = boost::vertices(graph);
         for(auto te = t.first; te != t.second; te++)
            graph[*te].used = false;
-
-        std::cout << "source: " << *iter << std::endl;
     }
-        // loop through each node
-            // get arr of prev.
-            // reconstruct path and add 1 to each edge
 
+    // Finds the Highest Value
+    auto e = boost::edges(graph);
+    auto max = *(e.first);
+    int maxCount = -1;
+    for(auto ed = e.first; ed != e.second; ed++) {
+        if(graph[*ed].count > maxCount) {
+            max = *ed;
+            maxCount = graph[*ed].count;
+
+        }
+        graph[*ed].count = 0;
+    }
+    std::cout << "max edge: " << max.m_source << " to " << max.m_target << std::endl;
+    boost::remove_edge(max.m_source, max.m_target, graph);
+    std::cout << "edge removed" << std::endl;
         // remove edge with highest value
 
     // find communities
