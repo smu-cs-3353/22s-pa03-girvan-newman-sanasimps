@@ -49,10 +49,16 @@ void Graph_helper::girvan_newman() {
 
     // While Girvan-Neumann modularity is not satisfied
 
-    // Max node with avg ege
-    //The modularity of a network is the sum of the modularities of all of its divisions.
-    //It is calculated by taking the sum of the edge weights between all pairs of nodes in the same community,
-    // and dividing by the sum of all edge weights in the network.
+    // keep track of original vertex degree
+    //      make 2 vertex properties: orig degree, new degree after edge is removed
+    // loop girvan newman until new community is formed
+    // for each node in community:
+        //  add new degrees -> no of edges within communities
+        //  add old degrees -> no of random edges
+    // calculate modularity for each community
+
+    // keep track of modularity and compare against current max
+    // keep doing it until no more edges, or until it decreases (idk which is better)
 
     //Breadth First Search to find shortest paths
     auto vpair = boost::vertices(graph);
