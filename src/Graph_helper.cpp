@@ -4,7 +4,6 @@
 
 #include "Graph_helper.h"
 
-
 void Graph_helper::print_graph() {
     boost::print_graph(graph);
 }
@@ -43,73 +42,30 @@ void Graph_helper::read_graphml(const char* file) {
 
 }
 
-void Graph_helper::Breadth_first_search () {
-    typedef boost::graph_traits<Graph>::vertex_descriptor vd;
+
+
+void Graph_helper::girvan_newman() {
+
 
     // While Girvan-Neumann modularity is not satisfied
 
+    // Max node with avg ege
+    //The modularity of a network is the sum of the modularities of all of its divisions.
+    //It is calculated by taking the sum of the edge weights between all pairs of nodes in the same community,
+    // and dividing by the sum of all edge weights in the network.
+
     //Breadth First Search to find shortest paths
     auto vpair = boost::vertices(graph);
-    for(auto iter = vpair.first; iter != vpair.second; iter++) {
+    for(vertexIt iter = vpair.first; iter != vpair.second; iter++) {
 
         std::cout << "source: " << *iter << std::endl;
         std::cout << "visited: ";
 
-        std::queue<vd> q;
         std::map<vd, vd> prev;
-        int count = -1;
 
-        q.push(*iter);
-        graph[*iter].used = true;
-        // source not included, when reconstructing use prev.count(source) != 0 as condition
-        while(!q.empty()) {
-            vd temp = q.front();
-            q.pop();
-            count++;
-            auto neighbors = boost::adjacent_vertices(temp, graph);
-            for(auto it = neighbors.first; it != neighbors.second; it++) {
-                if(!graph[*it].used && !graph[*it].foundPaths) {
-                    graph[*it].used = true;
-                    q.push(*it);
-                    graph[*it].distance = graph[temp].distance + 1;
-                    prev.insert(std::pair<vd, vd>(*it, temp));
-                    std::cout << *it << "(" << temp << ", " << graph[*it].distance << ") ";
-                }
-            }
-        }
-
-        std::cout << std::endl;
-        // reconstruct paths
-        for(auto& c : prev) {
-            std::vector<vd> path;
-            std::cout << c.first << ", " << c.second << ": ";
-            if(!graph[c.first].used) {
-                std::cout << "no path" << std::endl;
-            } else {
-                for(auto v = c.first; prev.count(v) != 0; v = prev[v]) {
-                    path.push_back(v);
-                }
-                path.push_back(*iter);
-                std::reverse(path.begin(), path.end());
-                std::cout << "Path: ";
-                int v = 0;
-                std::cout << path[v] << " ";
-                for(v = 1; v < path.size(); v++) {
-                    std::cout << path[v] << " ";
-                    auto e = boost::edge(path[v-1], path[v], graph);
-                    graph[e.first].count++;
-                }
-
-                std::cout << std::endl;
-            }
-        }
-
-        std::cout << std::endl;
-        // Resets tracking data for path construction
-        graph[*iter].foundPaths = true;
-        auto t = boost::vertices(graph);
-        for(auto te = t.first; te != t.second; te++)
-           graph[*te].used = false;
+        breadth_first_search(prev, iter);
+        reconstruct_paths(prev, iter);
+        reset_tracking_data(iter);  // Resets tracking data for path construction
     }
 
     // Finds the Highest Value
@@ -131,5 +87,63 @@ void Graph_helper::Breadth_first_search () {
 
     // find communities
 
+}
 
+void Graph_helper::breadth_first_search(std::map<vd, vd>& prev, vertexIt iter) {
+    std::queue<vd> q;
+    int count = -1;
+
+    q.push(*iter);
+    graph[*iter].used = true;
+    // source not included, when reconstructing use prev.count(source) != 0 as condition
+    while(!q.empty()) {
+        vd temp = q.front();
+        q.pop();
+        count++;
+        auto neighbors = boost::adjacent_vertices(temp, graph);
+        for(auto it = neighbors.first; it != neighbors.second; it++) {
+            if(!graph[*it].used && !graph[*it].foundPaths) {
+                graph[*it].used = true;
+                q.push(*it);
+                graph[*it].distance = graph[temp].distance + 1;
+                prev.insert(std::pair<vd, vd>(*it, temp));
+                std::cout << *it << "(" << temp << ", " << graph[*it].distance << ") ";
+            }
+        }
+    }
+    std::cout << std::endl;
+}
+
+void Graph_helper::reconstruct_paths (std::map<vd, vd>& prev, vertexIt iter) {
+    for(auto& c : prev) {
+        std::vector<vd> path;
+        std::cout << c.first << ", " << c.second << ": ";
+        if(!graph[c.first].used) {
+            std::cout << "no path" << std::endl;
+        } else {
+            for(auto v = c.first; prev.count(v) != 0; v = prev[v]) {
+                path.push_back(v);
+            }
+            path.push_back(*iter);
+            std::reverse(path.begin(), path.end());
+            std::cout << "Path: ";
+            int v = 0;
+            std::cout << path[v] << " ";
+            for(v = 1; v < path.size(); v++) {
+                std::cout << path[v] << " ";
+                auto e = boost::edge(path[v-1], path[v], graph);
+                graph[e.first].count++;
+            }
+
+            std::cout << std::endl;
+        }
+    }
+    std::cout << std::endl;
+}
+
+void Graph_helper::reset_tracking_data(vertexIt iter) {
+    graph[*iter].foundPaths = true;
+    auto vpair = boost::vertices(graph);
+    for(auto v = vpair.first; v != vpair.second; v++)
+        graph[*v].used = false;
 }

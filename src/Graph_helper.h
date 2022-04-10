@@ -32,6 +32,10 @@ struct EdgeProperty {
 };
 
 using Graph = boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, VertexProperty, EdgeProperty>;
+typedef boost::range_detail::integer_iterator<unsigned long> vertexIt;
+typedef boost::graph_traits<Graph>::vertex_descriptor vd;
+
+
 
 class Graph_helper {
 private:
@@ -43,8 +47,10 @@ public:
     void print_vertices();
 
     void read_graphml(const char*);
-    void Breadth_first_search();
-
+    void girvan_newman();
+    void breadth_first_search(std::map<vd, vd>&, vertexIt);
+    void reconstruct_paths(std::map<vd, vd>&, vertexIt);
+    void reset_tracking_data(vertexIt);
 
 };
 
