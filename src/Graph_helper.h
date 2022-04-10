@@ -20,6 +20,7 @@
 #include <fstream>
 #include <queue>
 
+
 struct GraphData { int community; };
 struct VertexProperty {
     int community = 0;
@@ -38,6 +39,9 @@ typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, Vert
 typedef boost::range_detail::integer_iterator<unsigned long> vertexIt;
 typedef boost::graph_traits<Graph>::vertex_descriptor vd;
 
+struct Mapper {
+    
+};
 
 
 class Graph_helper {

@@ -115,9 +115,37 @@ void Graph_helper::girvan_newman_helper() {
 
 
     }
+    get_modularity();
 
     // find communities
 
+}
+
+// vertex<custom> <- size of num component,
+//  custom has e and a values
+// itererate through component map and add e and a to component variable
+// do all divisions and calculations at the end 
+
+void Graph_helper::get_modularity () {
+    set_degree();
+//    std::vector<int> components(numNodes);
+//    size_t num_comp = boost::connected_components(graph, &components[0]);
+
+    std::map<vd, int> components;
+    int num_components = boost::connected_components(graph, boost::make_assoc_property_map(components));
+
+    for(auto& p : components) {
+        std::cout << "Vertex: " << p.first << " is in component " << p.second << std::endl;
+    }
+
+
+}
+
+void Graph_helper::set_degree() {
+    auto vpair = boost::vertices(graph);
+    for(auto iter = vpair.first; iter != vpair.second; iter++) {
+        graph[*iter].newDegree = (int)boost::degree(*iter, graph);
+    }
 }
 
 void Graph_helper::breadth_first_search(std::map<vd, vd>& prev, vertexIt iter) {
@@ -178,6 +206,7 @@ void Graph_helper::reset_tracking_data(vertexIt iter) {
     for(auto v = vpair.first; v != vpair.second; v++)
         graph[*v].used = false;
 }
+
 
 
 
