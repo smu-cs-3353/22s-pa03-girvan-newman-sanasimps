@@ -124,7 +124,7 @@ void Graph_helper::girvan_newman_helper() {
 // vertex<custom> <- size of num component,
 //  custom has e and a values
 // itererate through component map and add e and a to component variable
-// do all divisions and calculations at the end 
+// do all divisions and calculations at the end
 
 void Graph_helper::get_modularity () {
     set_degree();
@@ -134,9 +134,21 @@ void Graph_helper::get_modularity () {
     std::map<vd, int> components;
     int num_components = boost::connected_components(graph, boost::make_assoc_property_map(components));
 
+    std::vector<component> comp_mod(num_components);
     for(auto& p : components) {
         std::cout << "Vertex: " << p.first << " is in component " << p.second << std::endl;
+        comp_mod[p.second].compEdges += graph[p.first].newDegree;
+        comp_mod[p.second].totalEdges += graph[p.first].origDegree;
     }
+
+    double mod = 0;
+    for(auto& c : comp_mod) {
+        double temp = c.compEdges - ((double)c.totalEdges * c.totalEdges) / (2 * numEdges);
+        temp /= (2*numEdges);
+        std::cout << temp << std::endl;
+        mod += temp;
+    }
+    std::cout << "mod: " << mod << std::endl;
 
 
 }

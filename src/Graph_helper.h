@@ -35,12 +35,17 @@ struct EdgeProperty {
     int count = 0;
 };
 
+struct component {
+    int compEdges = 0;
+    int totalEdges = 0;
+};
+
 typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, VertexProperty, EdgeProperty> Graph;
 typedef boost::range_detail::integer_iterator<unsigned long> vertexIt;
 typedef boost::graph_traits<Graph>::vertex_descriptor vd;
 
 struct Mapper {
-    
+
 };
 
 
