@@ -234,7 +234,7 @@ void Graph_helper::reset_tracking_data(vertexIt iter) {
 
 void Graph_helper::print_report(std::vector<std::string> report) const {
     // outputs file with each component and their vertices
-    std::ofstream out("data/communities.txt");
+    std::ofstream out("data/community_report.txt");
     if(out.is_open()) {
         out << "Community Report\n";
         std::cout << "Community Report" << std::endl;
