@@ -7,6 +7,7 @@ add_executable(pa03 src/main.cpp src/Graph_helper.cpp)
 configure_file(data/test_data_2.graphml data/test_data_2.graphml COPYONLY)
 configure_file(data/dataset.graphml data/dataset.graphml COPYONLY)
 configure_file(data/test_data_1.graphml data/test_data_1.graphml COPYONLY)
+configure_file(data/communities.txt data/communities.txt COPYONLY)
 
 
 

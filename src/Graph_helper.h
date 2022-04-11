@@ -54,6 +54,9 @@ private:
     Graph graph;
     int numNodes;
     int numEdges;
+    std::map<vd, int> max_comp;
+    double best_mod;
+    int num_communities;
 
 public:
     void print_graph();
@@ -62,12 +65,13 @@ public:
 
     void read_graphml(const char*);
     void set_degree();
-    void get_modularity();
+    double get_modularity();
     void girvan_newman();
     void girvan_newman_helper();
     void breadth_first_search(std::map<vd, vd>&, vertexIt);
     void reconstruct_paths(std::map<vd, vd>&, vertexIt);
     void reset_tracking_data(vertexIt);
+    void print_report(std::vector<std::string>);
 
 };
 

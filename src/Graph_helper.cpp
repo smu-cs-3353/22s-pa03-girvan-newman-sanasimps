@@ -52,7 +52,30 @@ void Graph_helper::girvan_newman() {
         graph[*iter].origDegree = (int)boost::degree(*iter, graph);
     }
 
-    girvan_newman_helper();
+    double mod = 0;
+    while(true) {
+        girvan_newman_helper();
+        mod = get_modularity();
+        if(mod > best_mod) {
+            best_mod = mod;
+            num_communities = boost::connected_components(graph, boost::make_assoc_property_map(max_comp));
+        }
+
+        if(boost::num_edges(graph) == 0)
+            break;
+    }
+
+    std::vector<std::string> report(num_communities);
+
+    std::cout << "Best Modularity: " << best_mod << std::endl;
+    for(auto& c : max_comp) {
+        std::cout << c.first << " in community " << c.second << std::endl;
+        report[c.second] += std::to_string(c.first);
+        report[c.second] += ", ";
+    }
+    print_report(report);
+
+
 
 }
 
@@ -113,20 +136,13 @@ void Graph_helper::girvan_newman_helper() {
         new_num = boost::connected_components(graph, &component[0]);
         std::cout << "new comp num: " << new_num << std::endl;
 
-
     }
-    get_modularity();
 
     // find communities
 
 }
 
-// vertex<custom> <- size of num component,
-//  custom has e and a values
-// itererate through component map and add e and a to component variable
-// do all divisions and calculations at the end
-
-void Graph_helper::get_modularity () {
+double Graph_helper::get_modularity () {
     set_degree();
 //    std::vector<int> components(numNodes);
 //    size_t num_comp = boost::connected_components(graph, &components[0]);
@@ -149,6 +165,7 @@ void Graph_helper::get_modularity () {
         mod += temp;
     }
     std::cout << "mod: " << mod << std::endl;
+    return mod;
 
 
 }
@@ -219,126 +236,14 @@ void Graph_helper::reset_tracking_data(vertexIt iter) {
         graph[*v].used = false;
 }
 
-
-
-
-
-
-/* def buildG(G, file_, delimiter_):
-    #construct the weighted version of the contact graph from cgraph.dat file
-    #reader = csv.reader(open("/home/kazem/Data/UCI/karate.txt"), delimiter=" ")
-    reader = csv.reader(open(file_), delimiter=delimiter_)
-    for line in reader:
-        if len(line) > 2:
-            if float(line[2]) != 0.0:
-                #line format: u,v,w
-                G.add_edge(int(line[0]),int(line[1]),weight=float(line[2]))
-        else:
-            #line format: u,v
-            G.add_edge(int(line[0]),int(line[1]),weight=1.0)
-
-
-# This method keeps removing edges from Graph until one of the connected components of Graph splits into two
-# compute the edge betweenness
-def CmtyGirvanNewmanStep(G):
-    if _DEBUG_:
-        print("Running CmtyGirvanNewmanStep method ...")
-    init_ncomp = nx.number_connected_components(G)    #no of components
-    ncomp = init_ncomp
-    while ncomp <= init_ncomp:
-        bw = nx.edge_betweenness_centrality(G, weight='weight')    #edge betweenness for G
-        #find the edge with max centrality
-        max_ = max(bw.values())
-        #find the edge with the highest centrality and remove all of them if there is more than one!
-        for k, v in bw.items():
-            if float(v) == max_:
-                G.remove_edge(k[0],k[1])    #remove the central edge
-        ncomp = nx.number_connected_components(G)    #recalculate the no of components
-
-
-# This method compute the modularity of current split
-def _GirvanNewmanGetModularity(G, deg_, m_):
-    New_A = nx.adj_matrix(G)
-    New_deg = {}
-    New_deg = UpdateDeg(New_A, G.nodes())
-    #Let's compute the Q
-    comps = nx.connected_components(G)    #list of components
-    print('No of communities in decomposed G: {}'.format(nx.number_connected_components(G)))
-    Mod = 0    #Modularity of a given partitionning
-    for c in comps:
-        EWC = 0    #no of edges within a community
-        RE = 0    #no of random edges
-        for u in c:
-            EWC += New_deg[u]
-            RE += deg_[u]        #count the probability of a random edge
-        Mod += ( float(EWC) - float(RE*RE)/float(2*m_) )
-    Mod = Mod/float(2*m_)
-    if _DEBUG_:
-        print("Modularity: {}".format(Mod))
-    return Mod
-
-
-def UpdateDeg(A, nodes):
-    deg_dict = {}
-    n = len(nodes)  #len(A) ---> some ppl get issues when trying len() on sparse matrixes!
-    B = A.sum(axis = 1)
-    i = 0
-    for node_id in list(nodes):
-        deg_dict[node_id] = B[i, 0]
-        i += 1
-    return deg_dict
-
-
-# This method runs GirvanNewman algorithm and find the best community split by maximizing modularity measure
-def runGirvanNewman(G, Orig_deg, m_):
-    #let's find the best split of the graph
-    BestQ = 0.0
-    Q = 0.0
-    while True:
-        CmtyGirvanNewmanStep(G)
-        Q = _GirvanNewmanGetModularity(G, Orig_deg, m_);
-        print("Modularity of decomposed G: {}".format(Q))
-        if Q > BestQ:
-            BestQ = Q
-            Bestcomps = list(nx.connected_components(G))    #Best Split
-            print("Identified components: {}".format(Bestcomps))
-        if G.number_of_edges() == 0:
-            break
-    if BestQ > 0.0:
-        print("Max modularity found (Q): {} and number of communities: {}".format(BestQ, len(Bestcomps)))
-        print("Graph communities: {}".format(Bestcomps))
-    else:
-        print("Max modularity (Q):", BestQ)
-
-
-def main(argv):
-    if len(argv) < 2:
-        sys.stderr.write("Usage: %s <input graph>\n" % (argv[0],))
-        return 1
-    graph_fn = argv[1]
-    G = nx.Graph()  #let's create the graph first
-    buildG(G, graph_fn, ',')
-
-    if _DEBUG_:
-        print('G nodes: {} & G no of nodes: {}'.format(G.nodes(), G.number_of_nodes()))
-
-    n = G.number_of_nodes()    #|V|
-    A = nx.adj_matrix(G)    #adjacenct matrix
-
-    m_ = 0.0    #the weighted version for number of edges
-    for i in range(0,n):
-        for j in range(0,n):
-            m_ += A[i,j]
-    m_ = m_/2.0
-    if _DEBUG_:
-        print("m: {}".format(m_))
-
-    #calculate the weighted degree for each node
-    Orig_deg = {}
-    Orig_deg = UpdateDeg(A, G.nodes())
-
-    #run Newman alg
-    runGirvanNewman(G, Orig_deg, m_)
-
-if __name__ == "__main__":
-    sys.exit(main(sys.argv)) */
+void Graph_helper::print_report(std::vector<std::string> report) {
+    std::ofstream out("data/communities.txt");
+    if(out.is_open()) {
+        out << "Community Report\n";
+        for(int i = 0; i < report.size(); i++) {
+            out << "community #" << i << ": [";
+            out << report[i].substr(0, report[i].size()-2) << "]\n";
+        }
+    }
+    out << "Modularity: " << best_mod;
+}
