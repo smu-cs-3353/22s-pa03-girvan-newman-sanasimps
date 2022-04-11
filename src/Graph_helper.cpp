@@ -58,6 +58,7 @@ void Graph_helper::girvan_newman() {
         graph[*iter].origDegree = (int)boost::degree(*iter, graph);
     }
 
+    std::cout << "mod trends: ";
     double mod = 0;
     while(true) {
         girvan_newman_helper(); // to get edge betweeness centrality and remove edges
@@ -65,18 +66,22 @@ void Graph_helper::girvan_newman() {
         if(mod > best_mod) {
             best_mod = mod;
             num_communities = boost::connected_components(graph, boost::make_assoc_property_map(max_comp));
-        }
+            std::cout << "^";
+        } else
+            std::cout << ".";
+        std::cout.flush();
 
         // stops removing edges once no more edges remain
         if(boost::num_edges(graph) == 0)
             break;
     }
+    std::cout << std::endl << std::endl;
 
     // gets communities and prepares community report
     std::vector<std::string> report(num_communities);
     std::cout << "Best Modularity: " << best_mod << std::endl;
     for(auto& c : max_comp) {
-        std::cout << c.first << " in community " << c.second << std::endl;
+//        std::cout << c.first << " in community " << c.second << std::endl;
         report[c.second] += std::to_string(c.first);
         report[c.second] += ", ";
     }
@@ -154,7 +159,6 @@ double Graph_helper::get_modularity () {
         //std::cout << temp << std::endl;
         mod += temp;
     }
-    std::cout << "mod: " << mod << std::endl;
     return mod;
 
 
@@ -233,9 +237,12 @@ void Graph_helper::print_report(std::vector<std::string> report) const {
     std::ofstream out("data/communities.txt");
     if(out.is_open()) {
         out << "Community Report\n";
+        std::cout << "Community Report" << std::endl;
         for(int i = 0; i < report.size(); i++) {
             out << "community #" << i << ": [";
             out << report[i].substr(0, report[i].size()-2) << "]\n";
+            std::cout << "community #" << i << ": [";
+            std::cout << report[i].substr(0, report[i].size()-2) << "]\n";
         }
     }
     out << "Modularity: " << best_mod;
