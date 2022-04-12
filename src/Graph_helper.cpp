@@ -138,6 +138,58 @@ void Graph_helper::girvan_newman_helper() {
     }
 }
 
+void Graph_helper::louvain() {
+    // keeps track of total initial edges and nodes for later
+    numNodes = (int)boost::num_vertices(graph);
+    numEdges = (int)boost::num_edges(graph);
+
+    Graph temp = graph;
+    boost::remove_edges(graph);
+
+    while(true) {
+        //put each node of G in its own community.
+        num_communities = boost::connected_components(graph, boost::make_assoc_property_map(max_comp));
+
+        louvain_helper(temp);
+        if (curr_mod > best_mod) {
+            best_mod = curr_mod;
+        }
+        else
+            break;
+    }
+}
+
+void Graph_helper::louvain_helper(Graph& temp) {
+    bool nodesMoved = false;
+    do {
+        auto vpair = boost::vertices(temp);
+        for(vertexIt iter = vpair.first; iter != vpair.second; iter++) {
+            if (join_nodes(temp, iter))
+                nodesMoved = true;
+        }
+    } while(nodesMoved);
+}
+
+bool Graph_helper::join_nodes(Graph& temp, vertexIt iter) {
+    bool result = false;
+    auto neighbors = boost::adjacent_vertices(iter, temp);
+    ed* e = nullptr;
+    for (auto it = neighbors.first; it != neighbors.second; it++) {
+        boost::add_edge(it, iter, graph);
+        double mod = get_modularity();
+        if (mod > curr_mod) {
+            curr_mod = mod;
+            if (e)
+                boost::remove_edge(e->m_source, e->m_target, graph);
+            e = &boost::edge(it, iter, graph);
+            result = true;
+        }
+        else
+            boost::remove_edge(it, iter, graph);
+    }
+    return result;
+}
+
 double Graph_helper::get_modularity () {
     set_degree();   // to set current degrees for each vertex
 
