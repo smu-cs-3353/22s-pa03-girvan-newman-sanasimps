@@ -82,7 +82,7 @@ in to communities. We want a cluster that interacts more with itself more than o
 
 The equation is shown as follows:
 
-![modularity](https://latex.codecogs.com/svg.image?Q&space;=&space;\frac{1}{2m}\sum_{i,j}^{}[A_{ij}-\frac{k_{1}k_{2}}{2m}]\delta(c_{i},&space;c_{j}))
+![equation](images/equation.png)
 
 In basic terms, the modularity subtracts the total random or expected edges from each node in the community from
 every actual edge. This is achieved by getting the sum of the current degrees of every node in the cluster 
