@@ -83,6 +83,8 @@ void Graph_helper::girvan_newman() {
     for(auto& c : max_comp) {
 //        std::cout << c.first << " in community " << c.second << std::endl;
         report[c.second] += std::to_string(c.first);
+        report[c.second] += "-";
+        report[c.second] += std::to_string(graph[c.first].community);
         report[c.second] += ", ";
     }
     print_report(report);
