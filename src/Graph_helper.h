@@ -103,25 +103,54 @@ public:
     /**
      * Loop for Louvain algorithm. Joins communities together based on modularity, leading to new
      * partitions.
+     * @param Graph the graph containing all the edges
      */
     void louvain_helper(Graph&);
 
+    /**
+     * Final iteration for Louvain algorithm. Joins communities together based on
+     * modularity, leading to LESS partitions
+     */
+    void louvain_community_helper(Graph&);
 
     /**
-     * Join communities that create a higher modularity.
+     * Find the neighbor that increases the modularity the most
+     * @param vertexIt the current node to iterate through the neighbors of
+     * @param Graph the graph containing all the edges
      */
-    int join_nodes(vertexIt, Graph&);
+    int find_neighbor(vd, Graph&);
+
+    /**
+     * Find the community that increases the modularity the most
+     */
+    int find_community(int, Graph&);
+
+    /**
+     * Join communities together
+     */
+    void join_communities(int, int, Graph&);
+
+    /**
+     * Splits communities apart
+     * @param int the old community to go back to
+     * @param Graph the graph containing all the edges
+     */
+    void split_communities(int, Graph&);
 
     /**
      * clear a node's edges
+     * @param vd the node
      */
-    void clear_node(vertexIt);
+    void clear_node(vd);
 
     /**
      * fill a node with the edges for a given community, given
      * a template graph
+     * @param vertexIt the node
+     * @param int the community number
+     * @param Graph the graph containing all edges
      */
-    void fill_node(vertexIt, int, Graph&);
+    void fill_node(vd, int, Graph&);
 
     /**
      * Implementation of Breadth First Search in order to visit the graph by visiting each adjacent node

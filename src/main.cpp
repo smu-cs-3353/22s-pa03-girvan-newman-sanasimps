@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    if(argc == 2) {
+    if(argc >= 2) {
         char* file = argv[1];
         Graph_helper g1;
         g1.read_graphml(file);
