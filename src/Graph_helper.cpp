@@ -251,7 +251,7 @@ void Graph_helper::louvain_community_helper(Graph& temp) {
                 old_comm = c->second;
                 int new_comm = find_community(old_comm, temp);
 
-                if (new_comm != -1 && new_comm != old_comm && curr_mod > best_mod + best_mod/50) {
+                if (new_comm != -1 && new_comm != old_comm) {
                     // set communityMoved to true
                     communityMoved = true;
 
@@ -302,19 +302,22 @@ int Graph_helper::find_neighbor(vd iter, Graph& temp) {
 
 int Graph_helper::find_community(int old_comm, Graph& temp) {
     int new_comm = -1;
-    for (int i = 0; i < num_communities; i++) {
-        if (i != old_comm)
-            join_communities(old_comm, i, temp);
+    double delta = 0;
+    for (int i = old_comm + 1; i < num_communities; i++) {
+        join_communities(old_comm, i, temp);
 
         double mod = get_modularity();
 
         if (mod > curr_mod) {
+            delta += mod - curr_mod;
             curr_mod = mod;
             new_comm = i;
         }
         split_communities(old_comm, temp);
     }
-    return new_comm;
+    if (delta > curr_mod/250)
+        return new_comm;
+    return -1;
 }
 
 void Graph_helper::join_communities(int old_comm, int new_comm, Graph& temp) {
