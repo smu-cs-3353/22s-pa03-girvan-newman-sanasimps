@@ -72,6 +72,8 @@ public:
      */
     void set_degree();
 
+    double comp_modularity(int, std::map<vd, int>);
+
     /**
      *  Calculates the modularity of the current graph and components
      * @return the modularity
@@ -102,12 +104,24 @@ public:
      * Loop for Louvain algorithm. Joins communities together based on modularity, leading to new
      * partitions.
      */
-     void louvain_helper(Graph&);
+    void louvain_helper(Graph&);
 
-     /**
-      * Join communities that create a higher modularity.
-      */
-     bool join_nodes(Graph&, vertexIt);
+
+    /**
+     * Join communities that create a higher modularity.
+     */
+    int join_nodes(vertexIt, Graph&);
+
+    /**
+     * clear a node's edges
+     */
+    void clear_node(vertexIt);
+
+    /**
+     * fill a node with the edges for a given community, given
+     * a template graph
+     */
+    void fill_node(vertexIt, int, Graph&);
 
     /**
      * Implementation of Breadth First Search in order to visit the graph by visiting each adjacent node
