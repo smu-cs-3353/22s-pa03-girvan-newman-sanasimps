@@ -251,7 +251,7 @@ void Graph_helper::louvain_community_helper(Graph& temp) {
                 old_comm = c->second;
                 int new_comm = find_community(old_comm, temp);
 
-                if (new_comm != -1 && new_comm != old_comm && curr_mod > best_mod + .01) {
+                if (new_comm != -1 && new_comm != old_comm && curr_mod > best_mod + best_mod/50) {
                     // set communityMoved to true
                     communityMoved = true;
 
