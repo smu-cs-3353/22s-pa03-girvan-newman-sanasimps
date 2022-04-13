@@ -19,6 +19,7 @@
 #include <cxxabi.h>
 #include <fstream>
 #include <queue>
+#include <float.h>
 
 
 
@@ -42,6 +43,7 @@ struct component {
 typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, VertexProperty, EdgeProperty> Graph;
 typedef boost::range_detail::integer_iterator<unsigned long> vertexIt;
 typedef boost::graph_traits<Graph>::vertex_descriptor vd;
+typedef boost::graph_traits<Graph>::edge_descriptor ed;
 
 
 class Graph_helper {
@@ -50,7 +52,7 @@ private:
     int numNodes;
     int numEdges;
     std::map<vd, int> max_comp;
-    double best_mod;
+    double best_mod, curr_mod;
     int num_communities;
 
 public:
@@ -69,6 +71,8 @@ public:
      *  sets the newDegree vertex attribute for every vertex in the current graph
      */
     void set_degree();
+
+    double comp_modularity(int, std::map<vd, int>);
 
     /**
      *  Calculates the modularity of the current graph and components
@@ -89,6 +93,35 @@ public:
      *  partition
      */
     void girvan_newman_helper();
+
+    /**
+     * The master function for the Louvain community detection algorithm. Uses change in
+     * modularity to determine which community each node belongs to.
+     */
+    void louvain();
+
+    /**
+     * Loop for Louvain algorithm. Joins communities together based on modularity, leading to new
+     * partitions.
+     */
+    void louvain_helper(Graph&);
+
+
+    /**
+     * Join communities that create a higher modularity.
+     */
+    int join_nodes(vertexIt, Graph&);
+
+    /**
+     * clear a node's edges
+     */
+    void clear_node(vertexIt);
+
+    /**
+     * fill a node with the edges for a given community, given
+     * a template graph
+     */
+    void fill_node(vertexIt, int, Graph&);
 
     /**
      * Implementation of Breadth First Search in order to visit the graph by visiting each adjacent node
