@@ -178,8 +178,13 @@ void Graph_helper::louvain() {
         if (mod > best_mod) {
             best_mod = mod;
         }
-        else
+        else {
+            louvain_community_helper(temp);
+            mod = get_modularity();
+            if (mod > best_mod)
+                best_mod = mod;
             break;
+        }
     }
 
     // gets communities and prepares community report
@@ -210,21 +215,21 @@ void Graph_helper::louvain_helper(Graph& temp) {
 
             // get the neighboring community which maximizes
             // the modularity gain
-            int comm = join_nodes(iter, temp);
+            int comm = find_neighbor(*iter, temp);
 
             // if the community is found
-            if (comm != -1) {
+            if (comm != -1 && comm != this_comm) {
                 // set nodesMoved to true
                 nodesMoved = true;
 
                 // refactor the node
-                clear_node(iter);
-                fill_node(iter, comm, temp);
+                clear_node(*iter);
+                fill_node(*iter, comm, temp);
             }
             else {
                 // otherwise refactor the node back to its previous community
-                clear_node(iter);
-                fill_node(iter, this_comm, temp);
+                clear_node(*iter);
+                fill_node(*iter, this_comm, temp);
             }
 
             num_communities = boost::connected_components(graph, boost::make_assoc_property_map(max_comp));
@@ -232,9 +237,38 @@ void Graph_helper::louvain_helper(Graph& temp) {
     } while(nodesMoved);
 }
 
-int Graph_helper::join_nodes(vertexIt iter, Graph& temp) {
+void Graph_helper::louvain_community_helper(Graph& temp) {
+    bool communityMoved;
+    // loop while communities are moved
+    do {
+        communityMoved = false;
+        int old_comm = -1;
+        curr_mod = get_modularity();
+
+        // loop through all pairs of communities
+        for (auto c = max_comp.begin(); c != max_comp.end(); c++) {
+            if (c->second != old_comm) {
+                old_comm = c->second;
+                int new_comm = find_community(old_comm, temp);
+
+                if (new_comm != -1 && new_comm != old_comm && curr_mod > best_mod + best_mod/50) {
+                    // set communityMoved to true
+                    communityMoved = true;
+
+                    // refactor the communities
+                    join_communities(old_comm, new_comm, temp);
+                }
+
+                num_communities = boost::connected_components(graph, boost::make_assoc_property_map(max_comp));
+            }
+
+        }
+    } while(communityMoved);
+}
+
+int Graph_helper::find_neighbor(vd iter, Graph& temp) {
     // get the neighbors of the current node
-    auto neighbors = boost::adjacent_vertices(*iter, temp);
+    auto neighbors = boost::adjacent_vertices(iter, temp);
 
     // set the initial value of the new community (default -1)
     int new_comm = -1;
@@ -266,20 +300,53 @@ int Graph_helper::join_nodes(vertexIt iter, Graph& temp) {
     return new_comm;
 }
 
-void Graph_helper::clear_node(vertexIt iter) {
-    auto neighbors = boost::adjacent_vertices(*iter, graph);
+int Graph_helper::find_community(int old_comm, Graph& temp) {
+    int new_comm = -1;
+    for (int i = 0; i < num_communities; i++) {
+        if (i != old_comm)
+            join_communities(old_comm, i, temp);
+
+        double mod = get_modularity();
+
+        if (mod > curr_mod) {
+            curr_mod = mod;
+            new_comm = i;
+        }
+        split_communities(old_comm, temp);
+    }
+    return new_comm;
+}
+
+void Graph_helper::join_communities(int old_comm, int new_comm, Graph& temp) {
+    for (auto c = max_comp.begin(); c != max_comp.end(); c++) {
+        if (c->second == old_comm)
+            fill_node(c->first, new_comm, temp);
+    }
+}
+
+void Graph_helper::split_communities(int old_comm, Graph& temp) {
+    for (auto c = max_comp.begin(); c!= max_comp.end(); c++) {
+        if (c->second == old_comm) {
+            clear_node(c->first);
+            fill_node(c->first, old_comm, temp);
+        }
+    }
+}
+
+void Graph_helper::clear_node(vd iter) {
+    auto neighbors = boost::adjacent_vertices(iter, graph);
     for (auto it = neighbors.first; it != neighbors.second;) {
         // neighbor node
         vd n = *it;
         it++;
-        boost::remove_edge(*iter, n, graph);
+        boost::remove_edge(iter, n, graph);
     }
 }
 
-void Graph_helper::fill_node(vertexIt iter, int community, Graph& temp) {
+void Graph_helper::fill_node(vd iter, int community, Graph& temp) {
     for (auto c = max_comp.begin(); c != max_comp.end(); c++) {
-        if (c->second == community && boost::edge(*iter, c->first, temp).second)
-            boost::add_edge(*iter, c->first, graph);
+        if (c->second == community && boost::edge(iter, c->first, temp).second)
+            boost::add_edge(iter, c->first, graph);
     }
 }
 
