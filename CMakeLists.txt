@@ -10,6 +10,14 @@ configure_file(data/test_data_1.graphml data/test_data_1.graphml COPYONLY)
 configure_file(data/test_data_3.graphml data/test_data_3.graphml COPYONLY)
 configure_file(data/community_report.txt data/community_report.txt COPYONLY)
 configure_file(data/football.graphml data/football.graphml COPYONLY)
+configure_file(data/random_data_1.graphml data/random_data_1.graphml COPYONLY)
+configure_file(data/random_data_2.graphml data/random_data_2.graphml COPYONLY)
+configure_file(data/random_data_3.graphml data/random_data_3.graphml COPYONLY)
+configure_file(data/random_data_4.graphml data/random_data_4.graphml COPYONLY)
+configure_file(data/random_data_5.graphml data/random_data_5.graphml COPYONLY)
+configure_file(data/random_data_6.graphml data/random_data_6.graphml COPYONLY)
+
+
 
 
 
